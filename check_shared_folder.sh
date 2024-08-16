@@ -34,7 +34,7 @@ this_api_shared_app=$this_api_location/app/shared
 this_api_shared_it=$this_api_location/it/shared
 this_api_shared_test=$this_api_location/test/shared
 
-# Check both APIs shared folders for differences function
+# Check APIs shared folders for differences
 checkDiff(){
   # Concatenate Differences
   result=$result$(diff -rq "$1" "$2")
@@ -61,7 +61,7 @@ checkResult(){
   if [[ ${#result} -gt 0 ]]; then
     echo ">>> $(echo "$result" | wc -l)" "Differences Detected. Results stored in Shared_Folder_Differences.txt        <<<"
 
-    # Write result to the text file
+    # Write result to a text file
     echo "$result_formatted" > "$this_api_location/Shared_Folder_Differences.txt"
   else
     echo ">>>        No Differences Found :)        <<<"
