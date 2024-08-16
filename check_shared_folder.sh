@@ -7,7 +7,7 @@
 
 
 # Configurable variables if not standard. working_folder could be
-# set to something like "/Users/username/worksapce/" for example
+# set to something like "/Users/username/workspace/" for example
 working_folder="../"
 this_api_name=${PWD##*/}
 bsas_name="self-assessment-bsas-api"
