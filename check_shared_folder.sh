@@ -12,8 +12,8 @@ bsas_name="self-assessment-bsas-api"
 bsas_location=$working_folder$bsas_name
 this_api_location=$working_folder$this_api_name
 
-# Get current date and time
-time_now=$(date +"%Y-%m-%d-%H%M")
+# Get current date and time format: YYYYMMDD-HHMM
+time_now=$(date +"%Y%m%d-%H%M")
 
 # Pull latest version of bsas API
 cd "$bsas_location" || exit
@@ -102,8 +102,4 @@ read -rp "Would you like to commit changes and push? (Y/N): " confirm && [[ $con
 
 git add .
 git commit -m "UPDATE shared folders $time_now"
-#git push --set-upstream origin "UPDATE-SHARED-$time_now"
-
-#git restore .
-#git checkout main
-#git branch -D "UPDATE-SHARED-$time_now"
+git push --set-upstream origin "UPDATE-SHARED-$time_now"
