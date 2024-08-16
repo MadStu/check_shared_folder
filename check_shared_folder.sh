@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# This script should be run from within the APIs base folder
-# that you wish to match with bsas
+# This script should be run from within the base folder
+# of the API that you wish to update from bsas
 #
 # The script assumes all API repos are within the same working directory
 
