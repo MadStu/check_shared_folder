@@ -46,6 +46,8 @@ getResult(){
 
   # Make result easier to read
   result_formatted=$result
+  result_formatted=${result_formatted//$bsas_location/$bsas_name: }
+  result_formatted=${result_formatted//$this_api_location/$this_api_name: }
   result_formatted=${result_formatted// and/ &$'\n'}
   result_formatted=${result_formatted//Only in/$'\n'Only in }
   result_formatted=${result_formatted//Files/$'\n'}
