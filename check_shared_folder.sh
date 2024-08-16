@@ -69,17 +69,18 @@ checkResult(){
   fi
 }
 
+# Check we're in main branch and pull latest version
+updateAPI(){
+  cd "$1" || exit
+  git checkout main
+  git pull
+}
+
 ## Now to do all the things ##
 
-# Pull latest version of bsas API
-cd "$bsas_location" || exit
-git checkout main
-git pull
-
-# Pull latest version of this API
-cd "$this_api_location" || exit
-git checkout main
-git pull
+# Pull latest versions of APIs
+updateAPI "$bsas_location"
+updateAPI "$this_api_location"
 
 # Check and display the result for differences
 checkResult
