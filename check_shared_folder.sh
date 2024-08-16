@@ -1,9 +1,13 @@
 #!/bin/bash
 
-# This script should be run from within the API base folder that you wish to match with bsas
+# This script should be run from within the APIs base folder
+# that you wish to match with bsas
+#
 # The script assumes all API repos are within the same working directory
 
-# Configurable options if not standard
+
+# Configurable variables if not standard. working_folder could be
+# set to something like "/Users/username/worksapce/" for example
 working_folder="../"
 this_api_name=${PWD##*/}
 bsas_name="self-assessment-bsas-api"
@@ -15,16 +19,6 @@ this_api_location="$working_folder$this_api_name"
 # Get current date and time format: YYYYMMDD-HHMM
 time_now=$(date +"%Y%m%d-%H%M")
 
-# Pull latest version of bsas API
-cd "$bsas_location" || exit
-git checkout main
-git pull
-
-# Pull latest version of this API
-cd "$this_api_location" || exit
-git checkout main
-git pull
-
 # Create the shared folder variables
 bsas_shared_app="$bsas_location/app/shared"
 bsas_shared_it="$bsas_location/it/shared"
@@ -33,6 +27,10 @@ bsas_shared_test="$bsas_location/test/shared"
 this_api_shared_app="$this_api_location/app/shared"
 this_api_shared_it="$this_api_location/it/shared"
 this_api_shared_test="$this_api_location/test/shared"
+
+### The codey bit below ###
+
+## Functions ##
 
 # Check APIs shared folders for differences
 checkDiff(){
@@ -72,13 +70,25 @@ checkResult(){
   fi
 }
 
-# Check the result for differences
+## Now to do all the things ##
+
+# Pull latest version of bsas API
+cd "$bsas_location" || exit
+git checkout main
+git pull
+
+# Pull latest version of this API
+cd "$this_api_location" || exit
+git checkout main
+git pull
+
+# Check and display the result for differences
 checkResult
 
 # Get confirmation to update automatically
 read -rp "Would you like to auto update? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
-# Make sure in correct folder
+# Double check we're back in correct folder
 cd "$this_api_location" || exit
 
 # Create new branch
@@ -92,6 +102,7 @@ cp -r "$bsas_shared_app" "$this_api_shared_app"
 cp -r "$bsas_shared_it" "$this_api_shared_it"
 cp -r "$bsas_shared_test" "$this_api_shared_test"
 
+# Show git status so dev can confirm modified/added/deleted files
 git status
 
 # Ask if they want to run tests with the new shared folders
@@ -102,6 +113,7 @@ sbt clean coverage test it:test coverageReport
 # Check if they now want to commit and push the changes
 read -rp "Would you like to commit changes and push? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
+# Commit and push changes so now all the dev needs to do is create the PR
 git add .
 git commit -m "UPDATE shared folders $time_now"
 git push --set-upstream origin "UPDATE-SHARED-$time_now"
