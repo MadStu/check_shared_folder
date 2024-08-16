@@ -9,8 +9,8 @@ this_api_name=${PWD##*/}
 bsas_name="self-assessment-bsas-api"
 
 # Create location variables
-bsas_location=$working_folder$bsas_name
-this_api_location=$working_folder$this_api_name
+bsas_location="$working_folder$bsas_name"
+this_api_location="$working_folder$this_api_name"
 
 # Get current date and time format: YYYYMMDD-HHMM
 time_now=$(date +"%Y%m%d-%H%M")
@@ -26,13 +26,13 @@ git checkout main
 git pull
 
 # Create the shared folder variables
-bsas_shared_app=$bsas_location/app/shared
-bsas_shared_it=$bsas_location/it/shared
-bsas_shared_test=$bsas_location/test/shared
+bsas_shared_app="$bsas_location/app/shared"
+bsas_shared_it="$bsas_location/it/shared"
+bsas_shared_test="$bsas_location/test/shared"
 
-this_api_shared_app=$this_api_location/app/shared
-this_api_shared_it=$this_api_location/it/shared
-this_api_shared_test=$this_api_location/test/shared
+this_api_shared_app="$this_api_location/app/shared"
+this_api_shared_it="$this_api_location/it/shared"
+this_api_shared_test="$this_api_location/test/shared"
 
 # Check APIs shared folders for differences
 checkDiff(){
@@ -46,8 +46,8 @@ getResult(){
 
   # Make result easier to read
   result_formatted=$result
-  result_formatted=${result_formatted//$bsas_location/$bsas_name: }
-  result_formatted=${result_formatted//$this_api_location/$this_api_name: }
+  result_formatted=${result_formatted//$bsas_location/$bsas_name:$'\n'}
+  result_formatted=${result_formatted//$this_api_location/$this_api_name:$'\n'}
   result_formatted=${result_formatted// and/ &$'\n'}
   result_formatted=${result_formatted//Only in/$'\n'Only in }
   result_formatted=${result_formatted//Files/$'\n'}
