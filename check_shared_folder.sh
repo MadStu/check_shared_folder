@@ -12,13 +12,16 @@ bsas_name="self-assessment-bsas-api"
 bsas_location=$working_folder$bsas_name
 this_api_location=$working_folder$this_api_name
 
+# Get current date and time
+time_now=$(date +"%Y-%m-%d-%H%M")
+
 # Pull latest version of bsas API
-cd $bsas_location
+cd "$bsas_location" || exit
 git checkout main
 git pull
 
 # Pull latest version of this API
-cd $this_api_location
+cd "$this_api_location" || exit
 git checkout main
 git pull
 
@@ -34,12 +37,12 @@ this_api_shared_test=$this_api_location/test/shared
 # Check both APIs shared folders for differences function
 checkDiff(){
   # Concatenate Differences
-  result=$result$(diff -rq $1 $2)
+  result=$result$(diff -rq "$1" "$2")
 }
 
 # Check both APIs and format result
 getResult(){
-  checkDiff $1 $2
+  checkDiff "$1" "$2"
 
   # Make result easier to read
   result_formatted=$result
@@ -51,18 +54,18 @@ getResult(){
 # Check if the result has any data, if it does then there are differences
 checkResult(){
   # Check for differences in the 3 folders and get the result
-  getResult $bsas_shared_app $this_api_shared_app
-  getResult $bsas_shared_it $this_api_shared_it
-  getResult $bsas_shared_test $this_api_shared_test
+  getResult "$bsas_shared_app" "$this_api_shared_app"
+  getResult "$bsas_shared_it" "$this_api_shared_it"
+  getResult "$bsas_shared_test" "$this_api_shared_test"
 
   if [[ ${#result} -gt 0 ]]; then
     echo ">>> $(echo "$result" | wc -l)" "Differences Detected. Results stored in Shared_Folder_Differences.txt        <<<"
 
     # Write result to the text file
-    echo "$result_formatted" > $this_api_location/Shared_Folder_Differences.txt
+    echo "$result_formatted" > "$this_api_location/Shared_Folder_Differences.txt"
   else
     echo ">>>        No Differences Found :)        <<<"
-    echo ">>>        No Differences Found :)        <<<" > $this_api_location/Shared_Folder_Differences.txt
+    echo ">>>        No Differences Found :)        <<<" > "$this_api_location/Shared_Folder_Differences.txt"
     exit 1
   fi
 }
@@ -71,36 +74,36 @@ checkResult(){
 checkResult
 
 # Get confirmation to update automatically
-read -p "Would you like to auto update? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+read -rp "Would you like to auto update? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 # Make sure in correct folder
-cd $this_api_location
+cd "$this_api_location" || exit
 
 # Create new branch
-git checkout -b NOJIRA-UPDATE-SHARED
+git checkout -b "UPDATE-SHARED-$time_now"
 
 # Delete this APIs shared folders
-rm -rf $this_api_shared_app $this_api_shared_it $this_api_shared_test
+rm -rf "$this_api_shared_app" "$this_api_shared_it" "$this_api_shared_test"
 
 # Copy bsas shared folders to this API
-cp -r $bsas_shared_app $this_api_shared_app
-cp -r $bsas_shared_it $this_api_shared_it
-cp -r $bsas_shared_test $this_api_shared_test
+cp -r "$bsas_shared_app" "$this_api_shared_app"
+cp -r "$bsas_shared_it" "$this_api_shared_it"
+cp -r "$bsas_shared_test" "$this_api_shared_test"
 
 git status
 
 # Ask if they want to run tests with the new shared folders
-read -p "Would you like to run tests? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+read -rp "Would you like to run tests? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 sbt clean coverage test it:test coverageReport
 
 # Check if they now want to commit and push the changes
-read -p "Would you like to commit changes and push? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+read -rp "Would you like to commit changes and push? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 git add .
-git commit -m "UPDATE shared folders"
-#git push --set-upstream origin NOJIRA-UPDATE-SHARED
+git commit -m "UPDATE shared folders $time_now"
+#git push --set-upstream origin "UPDATE-SHARED-$time_now"
 
-git restore .
-git checkout main
-git branch -D NOJIRA-UPDATE-SHARED
+#git restore .
+#git checkout main
+#git branch -D "UPDATE-SHARED-$time_now"
