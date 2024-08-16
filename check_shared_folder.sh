@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script should be run from within the API base folder that you wish to match with bsas
+# The script assumes all API repos are within the same working directory
+
 # Configurable options if not standard
 working_folder="../"
 this_api_name=${PWD##*/}
@@ -79,17 +82,19 @@ git checkout -b NOJIRA-UPDATE-SHARED
 # Delete this APIs shared folders
 rm -rf $this_api_shared_app $this_api_shared_it $this_api_shared_test
 
-# Copy bsas shared folders
+# Copy bsas shared folders to this API
 cp -r $bsas_shared_app $this_api_shared_app
 cp -r $bsas_shared_it $this_api_shared_it
 cp -r $bsas_shared_test $this_api_shared_test
 
 git status
 
+# Ask if they want to run tests with the new shared folders
 read -p "Would you like to run tests? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 sbt clean coverage test it:test coverageReport
 
+# Check if they now want to commit and push the changes
 read -p "Would you like to commit changes and push? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 git add .
