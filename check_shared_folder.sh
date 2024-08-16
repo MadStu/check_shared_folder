@@ -115,5 +115,5 @@ read -rp "Would you like to commit changes and push? (Y/N): " confirm && [[ $con
 
 # Commit and push changes so now all the dev needs to do is create the PR
 git add .
-git commit -m "UPDATE shared folders $time_now"
+git commit -m "Update Shared Folders $time_now"
 git push --set-upstream origin "UPDATE-SHARED-$time_now"
