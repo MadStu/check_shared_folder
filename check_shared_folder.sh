@@ -59,13 +59,12 @@ checkResult(){
   getResult "$bsas_shared_test" "$this_api_shared_test"
 
   if [[ ${#result} -gt 0 ]]; then
-    echo ">>> $(echo "$result" | wc -l)" "Differences Detected. Results stored in Shared_Folder_Differences.txt        <<<"
+    echo ">>> $(echo "$result" | wc -l)" "Differences Detected. Results stored in .Shared_Folder_Differences        <<<"
 
-    # Write result to a text file
-    echo "$result_formatted" > "$this_api_location/Shared_Folder_Differences.txt"
+    # Write result to a text file so that the dev can review the differences
+    echo "$result_formatted" > "$this_api_location/.Shared_Folder_Differences"
   else
     echo ">>>        No Differences Found :)        <<<"
-    echo ">>>        No Differences Found :)        <<<" > "$this_api_location/Shared_Folder_Differences.txt"
     exit 1
   fi
 }
@@ -117,3 +116,6 @@ read -rp "Would you like to commit changes and push? (Y/N): " confirm && [[ $con
 git add .
 git commit -m "Update Shared Folders $time_now"
 git push --set-upstream origin "UPDATE-SHARED-$time_now"
+
+# Delete the file now it's not needed
+rm .Shared_Folder_Differences
