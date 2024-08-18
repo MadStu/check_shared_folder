@@ -1,5 +1,7 @@
 #!/bin/bash
 
+###### Change so it runs from shared folder
+
 # This script should be run from within the base folder
 # of the API that you wish to update from bsas
 #
@@ -76,6 +78,11 @@ updateAPI(){
   git pull
 }
 
+yesOrQuit(){
+  #Ask yes or no question. The script will exit if yes is not chosen
+  read -rp "$1" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+}
+
 ## Now to do all the things ##
 
 # Pull latest versions of APIs
@@ -86,7 +93,7 @@ updateAPI "$this_api_location"
 checkResult
 
 # Get confirmation to update automatically
-read -rp "Would you like to auto update? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+yesOrQuit "Would you like to auto update? (Y/N): "
 
 # Double check we're back in correct folder
 cd "$this_api_location" || exit
@@ -106,12 +113,12 @@ cp -r "$bsas_shared_test" "$this_api_shared_test"
 git status
 
 # Ask if they want to run tests with the new shared folders
-read -rp "Would you like to run tests? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+yesOrQuit "Would you like to run tests? (Y/N): "
 
 sbt clean coverage test it:test coverageReport
 
 # Check if they now want to commit and push the changes
-read -rp "Would you like to commit changes and push? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+yesOrQuit "Would you like to commit changes and push? (Y/N): "
 
 # Commit and push changes so now all the dev needs to do is create the PR
 git add .
