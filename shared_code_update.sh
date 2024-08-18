@@ -1,9 +1,7 @@
 #!/bin/bash
 
-###### Change so it runs from shared folder
-
-# This script should be run from within the base folder
-# of the API that you wish to update from bsas
+# This script should be run from within the app/shared folder
+# of the API that you wish to match the shared code with bsas
 #
 # The script assumes all API repos are within the same working directory
 
@@ -11,8 +9,11 @@
 # Configurable variables if not standard. working_folder could be
 # set to something like "/Users/username/workspace/" for example
 working_folder="../"
-this_api_name=${PWD##*/}
 bsas_name="self-assessment-bsas-api"
+
+# Go up two levels to base folder then get this API name
+cd ../../
+this_api_name=${PWD##*/}
 
 # Create location variables
 bsas_location="$working_folder$bsas_name"
@@ -79,11 +80,29 @@ updateAPI(){
 }
 
 yesOrQuit(){
-  #Ask yes or no question. The script will exit if yes is not chosen
-  read -rp "$1" confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+  # Ask yes or no question. The script will exit if a word not beginning with y is entered
+  read -rp "$1" confirm && [[ $confirm =~ ^[Yy] ]] || exit 1
+}
+
+checkShared(){
+  cd app
+  if [ "${PWD##*/}" == "app" ]; then
+    cd shared
+    if [ "${PWD##*/}" != "shared" ]; then
+      echo "Script not running from correct folder. Run from the app/shared folder."
+      exit 1
+    fi
+  else
+    echo "Script not running from correct folder. Run from the app/shared folder."
+    exit 1
+  fi
+  cd ../../ || exit
 }
 
 ## Now to do all the things ##
+
+# Check this script is running from correct app/shared folder
+checkShared
 
 # Pull latest versions of APIs
 updateAPI "$bsas_location"
